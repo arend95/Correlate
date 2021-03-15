@@ -1,4 +1,5 @@
 import os
+import math
 import matplotlib.pyplot as pt
 import matplotlib
 matplotlib.rcParams.update({'font.size': 20})
@@ -26,7 +27,6 @@ def ReadChi():
     i = 0.0
     rms1 = 0.0
     rms2 = 0.0
-    
     with open("data.out","r") as dat:
         for line in dat:
             line = Convert(line)
@@ -60,7 +60,31 @@ def PlotChi(Chi1, Chi2, r):
     pt.savefig(fname="xi.png",bbox_inches='tight', dpi=300)
     pt.show()
     
+def PlotFields():
+    XD = []
+    YD = []
+    XR = []
+    YR = []
+    
+    with open("DD.txt","r") as dat, open("RR.txt","r") as rat:
+        for line0, line1 in zip(dat, rat):
+            line0 = Convert(line0)
+            line1 = Convert(line1)
+            XD.append(line0[0])
+            YD.append(line0[1])
+            
+            XR.append(line1[0])
+            YR.append(line1[1])
+    
+    fig, ax = pt.subplots(2,1, figsize=(10,10))
+    ax[0].plot(XD, YD, "b.")
+    ax[1].plot(XR, YR, "b.")
+    
+    pt.show()
+    
 if __name__ == "__main__":
     RunStuff()
     Chi1, Chi2, r = ReadChi()
+    
     PlotChi(Chi1, Chi2, r)
+    PlotFields()
