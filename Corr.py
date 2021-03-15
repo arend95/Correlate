@@ -25,8 +25,6 @@ def ReadChi():
     
     r    = []
     i = 0.0
-    rms1 = 0.0
-    rms2 = 0.0
     with open("data.out","r") as dat:
         for line in dat:
             line = Convert(line)
@@ -35,15 +33,6 @@ def ReadChi():
             Chi2.append(line[1])
             r.append(i+0.5)
             i += 1.0
-            
-            rms1 += line[0]**2
-            rms2 += line[1]**2
-    
-    rms1 = math.sqrt(rms1/len(Chi1))
-    rms2 = math.sqrt(rms2/len(Chi2))
-    
-    print("# rms 1 = {}".format(rms1))
-    print("# rms 2 = {}".format(rms2))
             
     return Chi1, Chi2, r
 
@@ -83,8 +72,51 @@ def PlotFields():
     pt.show()
     
 if __name__ == "__main__":
-    RunStuff()
-    Chi1, Chi2, r = ReadChi()
+    length = input("# N runs ?(y|n): ")
+    Nsim = 1000 # Nice and high...
+    rms1 = 0.0
+    rms2 = 0.0
     
-    PlotChi(Chi1, Chi2, r)
-    PlotFields()
+    if length == 'n':
+        RunStuff()
+        Chi1, Chi2, r = ReadChi()
+    
+        PlotChi(Chi1, Chi2, r)
+        PlotFields()
+        
+        for k in range(len(r)):
+            rms1 += Chi1[k]**2
+            rms2 += Chi2[k]**2
+            
+        rms1 = math.sqrt(rms1/len(Chi1))
+        rms2 = math.sqrt(rms2/len(Chi2))
+    
+        print("# rms 1 = {}".format(rms1))
+        print("# rms 2 = {}".format(rms2))
+            
+        
+    if length == 'y':
+        RunStuff()
+        Chi1, Chi2, r = ReadChi()
+        Chi1tot = Chi1
+        Chi2tot = Chi2 # Remember to normalize with N+1 because of this extra step
+        for i in range(Nsim):
+            print(i)
+            RunStuff()
+            Chi1, Chi2, r = ReadChi()
+            
+            for k in range(len(r)):
+                Chi1tot[k] += Chi1[k]/(Nsim+1)
+                Chi2tot[k] += Chi2[k]/(Nsim+1)
+        
+        PlotChi(Chi1tot, Chi2tot, r)
+        
+        for k in range(len(r)):
+            rms1 += Chi1[k]**2
+            rms2 += Chi2[k]**2
+            
+        rms1 = math.sqrt(rms1/len(Chi1))
+        rms2 = math.sqrt(rms2/len(Chi2))
+    
+        print("# rms 1 = {}".format(rms1))
+        print("# rms 2 = {}".format(rms2))
