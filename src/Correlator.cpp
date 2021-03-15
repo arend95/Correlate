@@ -33,70 +33,31 @@ void Correlator::ReadXY() {
 void Correlator::GenerateRR() {
     float min = 64;
     float max = 448;
-    int numax = 55; // 55 ~ sqrt(3000), uniform distribution
-    float incr = (max-min)/numax; 
+    srand( (unsigned)time( NULL ) );
     
-    for(int i=0; i<numax; i++) {
-        float temp = min + incr*i;
-        XR.push_back(temp);
-        YR.push_back(temp);
+    for(int i=0; i<N; i++) {
+        float tempx = (float) rand()/RAND_MAX;
+        float tempy = (float) rand()/RAND_MAX;
+            
+        XR.push_back(tempx*(max-min) + min);
+        YR.push_back(tempy*(max-min) + min);
     }
 }
-        
 
-void Correlator::CorrDD() {
-    DD.assign(rmax, 0.0);
+void Correlator::Corr12(vector<float> &X1, vector<float> &Y1, vector<float> &X2, vector<float> &Y2, vector<float> &XX) {
+    XX.assign(rmax, 0.0);
+    
     for(int i=0; i<N-1; i++) {
         
         for(int j=i+1; j<N; j++) {
-            float dx = XD[i] - XD[j];
-            float dy = YD[i] - YD[j];
+            float dx = X1[i] - X2[j];
+            float dy = Y1[i] - Y2[j];
             
             float sep = sqrt(dx*dx + dy*dy);
             
             for(int k=rmax-1; k>=0; k--) {
                 if(sep > k && sep < k+1) {
-                    DD[k] += 2; // Keep in mind each pair is counted twice
-                    break;
-                }
-            }
-        }
-    }
-}
-
-void Correlator::CorrRR() {
-    RR.assign(rmax, 0.0);
-    for(int i=0; i<N-1; i++) {
-        
-        for(int j=i+1; j<N; j++) {
-            float dx = XR[i] - XR[j];
-            float dy = YR[i] - YR[j];
-            
-            float sep = sqrt(dx*dx + dy*dy);
-            
-            for(int k=rmax-1; k>=0; k--) {
-                if(sep > k && sep < k+1) {
-                    RR[k] += 2; // Keep in mind each pair is counted twice
-                    break;
-                }
-            }
-        }
-    }
-}
-
-void Correlator::CorrDR() {
-    DR.assign(rmax, 0.0);
-    for(int i=0; i<N-1; i++) {
-        
-        for(int j=i+1; j<N; j++) {
-            float dx = XD[i] - XR[j];
-            float dy = YD[i] - YR[j];
-            
-            float sep = sqrt(dx*dx + dy*dy);
-            
-            for(int k=rmax-1; k>=0; k--) {
-                if(sep > k && sep < k+1) {
-                    DR[k] += 2; // Keep in mind each pair is counted twice
+                    XX[k] += 2; // Keep in mind each pair is counted twice
                     break;
                 }
             }
@@ -112,11 +73,22 @@ void Correlator::CalcChi() {
 }
 
 void Correlator::WriteData() {
-    ofstream Output;
-    Output.open("data.out");
+    ofstream Out;
+    ofstream RR;
+    ofstream DD;
+    Out.open("data.out");
+    RR.open("RR.txt");
+    DD.open("DD.txt");
     
     for(int i=0; i<rmax; i++) {
-        Output << Chi1[i] << " " << Chi2[i] << endl;
+        Out << Chi1[i] << " " << Chi2[i] << endl;
     }
-    Output.close();
+    
+    for(int i=0; i<N; i++) {
+        RR << XR[i] << " " << YR[i] << endl;
+        DD << XD[i] << " " << YD[i] << endl;
+    }
+    Out.close();
+    RR.close();
+    DD.close();
 }
