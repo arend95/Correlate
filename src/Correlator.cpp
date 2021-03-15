@@ -2,9 +2,7 @@
 
 Correlator::Correlator() {
     this->N    = 3000;
-    this->rmin = 0;
     this->rmax = 20;
-    this->dr   = 1;
     
     Chi1.assign(rmax, 0.0);
     Chi2.assign(rmax, 0.0);
