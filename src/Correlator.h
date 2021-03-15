@@ -16,9 +16,7 @@ using namespace std;
 class Correlator {
 public:
     int N;
-    int rmin;
     int rmax;
-    int dr;
     
     vector<float> XD, YD;
     vector<float> XR, YR;
