@@ -24,6 +24,9 @@ def ReadChi():
     
     r    = []
     i = 0.0
+    rms1 = 0.0
+    rms2 = 0.0
+    
     with open("data.out","r") as dat:
         for line in dat:
             line = Convert(line)
@@ -32,6 +35,15 @@ def ReadChi():
             Chi2.append(line[1])
             r.append(i+0.5)
             i += 1.0
+            
+            rms1 += line[0]**2
+            rms2 += line[1]**2
+    
+    rms1 = math.sqrt(rms1/len(Chi1))
+    rms2 = math.sqrt(rms2/len(Chi2))
+    
+    print("# rms 1 = {}".format(rms1))
+    print("# rms 2 = {}".format(rms2))
             
     return Chi1, Chi2, r
 
