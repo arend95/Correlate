@@ -3,6 +3,7 @@ using namespace std;
 
 #include <fstream>
 #include <iomanip>
+#include <time.h>
 
 #include <vector>
 #include <cmath>
@@ -13,7 +14,7 @@ using namespace std;
 #define __Correlator_h
 
 class Correlator {
-private:
+public:
     int N;
     int rmin;
     int rmax;
@@ -25,21 +26,16 @@ private:
     
     vector<float> Chi1, Chi2;
     
-public:
     Correlator();
     
     void ReadXY();
     void GenerateRR();
     
-    void CorrDD();
-    void CorrRR();
-    void CorrDR();
-    
+    void Corr12(vector<float> &X1, vector<float> &Y1, vector<float> &X2, vector<float> &Y2, vector<float> &XX);
+
     void CalcChi();
     
     void WriteData();
 };
 
 #endif
-    
-    
